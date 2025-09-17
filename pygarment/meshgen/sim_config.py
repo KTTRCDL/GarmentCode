@@ -7,18 +7,22 @@ from pygarment.data_config import Properties
 class PathCofig:
     """Routines for getting paths to various relevant objects with standard names"""
     def __init__(self, 
-                 in_element_path, out_path, in_name, out_name=None, 
+                 in_element_path, out_path, in_name, body_default_dir=None, out_name=None, 
                  body_name='', samples_name='', default_body=True,
                  smpl_body=False,
-                 add_timestamp=False):
+                 add_timestamp=False,
+                 system_config_path='./system.json',
+                 data_root_path=None):
         """Specify 
             * in_element_path
             * our_path -- dataset level output path
             * body_name -- specify to indicate use of default bodies 
             * samples_name -- specify to indicate use of body sampling (reading body name from measurments file)
         """
-
-        self._system = Properties('./system.json')  # TODOlOW More stable path?
+        if body_default_dir is None:
+            self._system = Properties(system_config_path)  # TODOlOW More stable path?
+        else:
+            self._system = {'bodies_default_path': body_default_dir}
         self._body_name = body_name
         self._samples_folder_name = samples_name
         self._use_default_body = default_body
@@ -29,13 +33,20 @@ class PathCofig:
             out_name = in_name
         self.in_tag = in_name
         self.out_folder_tag = f'{out_name}_{datetime.now().strftime("%y%m%d-%H-%M-%S")}' if add_timestamp else out_name
-        self.sim_tag = out_name 
-        self.boxmesh_tag = out_name
+        if out_name is None:
+            self.sim_tag = out_name
+            self.boxmesh_tag = out_name
+        else:
+            self.sim_tag = in_name
+            self.boxmesh_tag = in_name
 
         # Base paths
-        self.input = Path(in_element_path)
+        if data_root_path is None:
+            self.input = Path(in_element_path)
+        else:
+            self.input = Path(data_root_path) / Path(in_element_path)
         self.out = out_path
-        self.out_el = Path(out_path) / self.out_folder_tag
+        self.out_el = Path(out_path) / Path(self.out_folder_tag)
         self.out_el.mkdir(parents=True, exist_ok=True)
         
         # Individual file paths

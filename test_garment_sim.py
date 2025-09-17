@@ -21,7 +21,8 @@ def get_command_args():
         '--sim_config', '-s', 
         help='Path to simulation config', 
         type=str, 
-        default='./assets/Sim_props/default_sim_props.yaml')
+        default='./assets/Sim_props/default_sim_props_modified.yaml')
+        # default='./assets/Sim_props/default_sim_props.yaml')
 
     args = parser.parse_args()
     print('Commandline arguments: ', args)
@@ -41,12 +42,20 @@ if __name__ == "__main__":
     garment_name, _, _ = spec_path.stem.rpartition('_')  # assuming ending in '_specification'
 
     sys_props = data_config.Properties('./system.json')
+    # paths = PathCofig(
+    #     in_element_path=spec_path.parent,  
+    #     out_path=sys_props['output'], 
+    #     in_name=garment_name,
+    #     body_name='mean_all',    # 'f_smpl_average_A40' 'mean_all' 'mean_all_tpose'
+    #     smpl_body=False,   # NOTE: depends on chosen body model
+    #     add_timestamp=True
+    # )
     paths = PathCofig(
         in_element_path=spec_path.parent,  
         out_path=sys_props['output'], 
         in_name=garment_name,
-        body_name='mean_all',    # 'f_smpl_average_A40'
-        smpl_body=False,   # NOTE: depends on chosen body model
+        body_name='hello_smpl_110_manual_ori',    # 'mean_all' 'm_smpl_average_A40' 'hello_smpl_110_manual' 'f_smpl_average_A40' 'hello_smpl_110_manual_ori'
+        smpl_body=True,   # NOTE: depends on chosen body model
         add_timestamp=True
     )
 

@@ -37,6 +37,8 @@ class Cloth:
 
         self.c_scale = 1.0
         self.b_scale = 100.0
+        # self.c_scale = 0.01
+        # self.b_scale = 1.0
         self.body_path = paths.in_body_obj
         
         # collision resolution options
@@ -102,8 +104,8 @@ class Cloth:
         body_vertices = body_vertices * self.b_scale
         self.shift_y = self.get_shift_param(body_vertices)
 
-        if self.shift_y:
-            body_vertices[:, 1] = body_vertices[:, 1] + self.shift_y
+        # if self.shift_y:
+        #     body_vertices[:, 1] = body_vertices[:, 1] + self.shift_y
 
         self.v_body = body_vertices
         self.f_body = body_faces
@@ -116,8 +118,10 @@ class Cloth:
         stitching_vertices = cloth_seg_dict["stitch"] if 'stitch' in cloth_seg_dict.keys() else []
 
         cloth_vertices = cloth_vertices * self.c_scale
+        # if self.shift_y:
+        #     cloth_vertices[:, 1] = cloth_vertices[:, 1] + self.shift_y
         if self.shift_y:
-            cloth_vertices[:, 1] = cloth_vertices[:, 1] + self.shift_y
+            cloth_vertices[:, 1] = cloth_vertices[:, 1] - self.shift_y
         self.v_cloth_init = cloth_vertices
         self.f_cloth = cloth_faces
 
@@ -281,7 +285,8 @@ class Cloth:
                         waist_level = body_dict['height'] - body_dict['head_l'] - body_dict['waist_line']
                     builder.add_attachment(
                         constaint_verts, 
-                        wp.vec3(0, waist_level, 0),
+                        # wp.vec3(0, waist_level, 0),
+                        wp.vec3(0, waist_level - self.shift_y, 0),
                         wp.vec3(0., 1., 0.),    # Vertical attachment
                         stiffness = config.attachment_stiffness[i],
                         damping = config.attachment_damping[i]
